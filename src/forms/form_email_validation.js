@@ -1,15 +1,12 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { Formik, Form, useField } from "formik";
-import * as Yup from "yup";
-import styled from "@emotion/styled";
-import "./styles.css";
-import "./styles-custom.css";
-import Axios from "axios";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Formik, Form, useField } from 'formik';
+import styled from '@emotion/styled';
+import * as Yup from 'yup';
 
 const MyTextInput = ({ label, ...props }) => {
     // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
-    // which we can spread on <input> and alse replace ErrorMessage entirely.
+    // which we can spread on <input> and also replace ErrorMessage entirely.
     const [field, meta] = useField(props);
     return (
         <>
@@ -23,11 +20,14 @@ const MyTextInput = ({ label, ...props }) => {
 };
 
 const MyCheckbox = ({ children, ...props }) => {
-    const [field, meta] = useField({ ...props, type: "checkbox" });
+    // We need to tell useField what type of input this is
+    // since React treats radios and checkboxes differently
+    // than inputs/select/textarea.
+    const [field, meta] = useField({ ...props, type: 'checkbox' });
     return (
         <>
             <label className="checkbox">
-                <input {...field} {...props} type="checkbox" />
+                <input type="checkbox" {...field} {...props} />
                 {children}
             </label>
             {meta.touched && meta.error ? (
@@ -39,30 +39,18 @@ const MyCheckbox = ({ children, ...props }) => {
 
 // Styled components ....
 const StyledSelect = styled.select`
-  color: var(--blue);
+  /** ... * /
 `;
 
 const StyledErrorMessage = styled.div`
-  font-size: 12px;
-  color: var(--red-600);
-  width: 400px;
-  margin-top: 0.25rem;
-  &:before {
-    content: "❌ ";
-    font-size: 10px;
-  }
-  @media (prefers-color-scheme: dark) {
-    color: var(--red-300);
-  }
+  /** ... * /
 `;
 
 const StyledLabel = styled.label`
-  margin-top: 1rem;
+ /** ...* /
 `;
 
 const MySelect = ({ label, ...props }) => {
-    // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
-    // which we can spread on <input> and alse replace ErrorMessage entirely.
     const [field, meta] = useField(props);
     return (
         <>
@@ -75,83 +63,56 @@ const MySelect = ({ label, ...props }) => {
     );
 };
 
-
-
 // And now we can use these
 const SignupForm = () => {
-
     return (
         <>
             <h1>Subscribe!</h1>
             <Formik
                 initialValues={{
-                    username: "",
-                    password: "",
-                    email: "",
+                    firstName: '',
+                    lastName: '',
+                    email: '',
                     acceptedTerms: false, // added for our checkbox
-                    jobType: "" // added for our select
+                    jobType: '', // added for our select
                 }}
                 validationSchema={Yup.object({
-                    username: Yup.string()
-                        .max(15, "Must be 15 characters or less")
-                        .required("Required"),
-                    password: Yup.string()
-                        .max(20, "Must be 20 characters or less")
-                        .required("Required"),
+                    firstName: Yup.string()
+                        .max(15, 'Must be 15 characters or less')
+                        .required('Required'),
+                    lastName: Yup.string()
+                        .max(20, 'Must be 20 characters or less')
+                        .required('Required'),
                     email: Yup.string()
-                        .email("Invalid email addresss`")
-                        .required("Required"),
+                        .email('Invalid email address')
+                        .required('Required'),
                     acceptedTerms: Yup.boolean()
-                        .required("Required")
-                        .oneOf([true], "You must accept the terms and conditions."),
+                        .required('Required')
+                        .oneOf([true], 'You must accept the terms and conditions.'),
                     jobType: Yup.string()
-                    // specify the set of valid values for job type
-                    // @see http://bit.ly/yup-mixed-oneOf
                         .oneOf(
-                            ["designer", "development", "product", "other"],
-                            "Invalid Job Type"
+                            ['designer', 'development', 'product', 'other'],
+                            'Invalid Job Type'
                         )
-                        .required("Required")
+                        .required('Required'),
                 })}
                 onSubmit={(values, { setSubmitting }) => {
                     setTimeout(() => {
-                   ///   alert(JSON.stringify(values, null, 2));
-                        const data = values.valueOf("values");
-
-                        Axios({
-                            method: 'post',
-                            url: 'http://parliament.itracker71.com/oauth/token',
-                            data: {
-                                "grant_type" : "password",
-                                "client_id" : "2",
-                                "client_secret" : "lCtUFBst1FxnzJLbinN4u5tvsLY2atMEwjmat39G",
-                                "username" : values.username,
-                                "password" : values.password
-                            },
-                            headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        })
-                            .then(response => {
-
-                                console.log(response);
-                            })
-                            .catch(err => console.log(err));
-
-
-
-                     //   setSubmitting(false);
+                        alert(JSON.stringify(values, null, 2));
+                        setSubmitting(false);
                     }, 400);
                 }}
             >
                 <Form>
                     <MyTextInput
                         label="First Name"
-                        name="username"
+                        name="firstName"
                         type="text"
                         placeholder="Jane"
                     />
                     <MyTextInput
                         label="Last Name"
-                        name="password"
+                        name="lastName"
                         type="text"
                         placeholder="Doe"
                     />
@@ -178,9 +139,5 @@ const SignupForm = () => {
         </>
     );
 };
-function App() {
-    return <SignupForm />;
-}
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
+export default SignupForm;
