@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import { Formik } from 'formik';
 import App from './App';
-import SignUpForm from './forms/form_email_validation';
+import SignUpForm from '../forms/form_email_validation';
 
 
 

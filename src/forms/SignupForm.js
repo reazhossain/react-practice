@@ -3,8 +3,8 @@ import ReactDOM from "react-dom";
 import { Formik, Form, useField } from "formik";
 import * as Yup from "yup";
 import styled from "@emotion/styled";
-import "../styles.css";
-import "../styles-custom.css";
+import "../extra/styles.css";
+import "../extra/styles-custom.css";
 import Axios from "axios";
 import SignUpForm from "./my_form";
 
